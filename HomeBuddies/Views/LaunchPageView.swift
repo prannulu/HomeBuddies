@@ -9,20 +9,27 @@ import SwiftUI
 import FirebaseAuth
 
 struct LaunchPageView: View {
+    @StateObject var userModel = UserViewModel()
+    @StateObject var houseModel = ViewOneHouse()
+    @StateObject var taskModel = TaskViewModel()
     @State private var email = ""
     @State private var password = ""
     @State private var firstName = ""
     @State private var lastName = ""
+    @State private var error = ""
     @State private var userIsLoggedIn = false
-    @StateObject var thisUser = UserViewModel()
     
     
     var body: some View {
         if userIsLoggedIn{
-            UserPagesView(userModel: thisUser)
+            UserPagesView(signoutFunc: signout)
+                .environmentObject(userModel)
+                .environmentObject(houseModel)
+                .environmentObject(taskModel)
         } else {
             content
         }
+        
     }
     
     var content: some View {
@@ -31,7 +38,13 @@ struct LaunchPageView: View {
                 Color.green
                     .opacity(0.7)
                     .ignoresSafeArea()
+                
                 VStack{
+                    Image("Image 1")
+                        .resizable()
+                        .scaledToFit()
+                        .clipShape(Circle())
+                        .frame(width: 200, height: 200)
                     Text("~ HomeBuddies ~").font(.title).foregroundColor(.white).bold()
                     Divider()
                     NavigationLink(destination: signin) {
@@ -58,41 +71,46 @@ struct LaunchPageView: View {
                         .font(.title)
                     Text("Let's get started.").offset(y: -100)
                 }
-                TextField("First Name", text: $firstName)
-                    .foregroundColor(.white)
-                    .textFieldStyle(.plain)
-                    .bold()
-                
-                Rectangle()
-                    .frame(width: 350, height:1)
-                    .foregroundColor(.black)
-                
-                TextField("LastName", text: $lastName)
-                    .foregroundColor(.white)
-                    .textFieldStyle(.plain)
-                    .bold()
-                
-                Rectangle()
-                    .frame(width: 350, height:1)
-                    .foregroundColor(.black)
-                
-                TextField("Email", text: $email)
-                    .foregroundColor(.white)
-                    .textFieldStyle(.plain)
-                    .bold()
-                
-                Rectangle()
-                    .frame(width: 350, height:1)
-                    .foregroundColor(.black)
-                
-                SecureField("Password", text: $password)
-                    .foregroundColor(.white)
-                    .textFieldStyle(.plain)
-                    .bold()
-                
-                Rectangle()
-                    .frame(width: 350, height:1)
-                    .foregroundColor(.black)
+                Section {
+                    TextField("First Name", text: $firstName)
+                        .foregroundColor(.white)
+                        .textFieldStyle(.plain)
+                        .bold()
+                    
+                    Rectangle()
+                        .frame(width: 350, height:1)
+                        .foregroundColor(.black)
+                    
+                    TextField("LastName", text: $lastName)
+                        .foregroundColor(.white)
+                        .textFieldStyle(.plain)
+                        .bold()
+                    
+                    Rectangle()
+                        .frame(width: 350, height:1)
+                        .foregroundColor(.black)
+                    
+                    TextField("Email", text: $email)
+                        .foregroundColor(.white)
+                        .textFieldStyle(.plain)
+                        .bold()
+                    
+                    Rectangle()
+                        .frame(width: 350, height:1)
+                        .foregroundColor(.black)
+                    
+                    SecureField("Password", text: $password)
+                        .foregroundColor(.white)
+                        .textFieldStyle(.plain)
+                        .bold()
+                    
+                    Rectangle()
+                        .frame(width: 350, height:1)
+                        .foregroundColor(.black)
+                }
+                if self.error != "" {
+                    Text(error).foregroundColor(.red)
+                }
                 
                 Button {
                     register()
@@ -145,6 +163,10 @@ struct LaunchPageView: View {
                     .frame(width: 350, height:1)
                     .foregroundColor(.black)
                 
+                if self.error != "" {
+                    Text(error).foregroundColor(.red)
+                }
+                
                 Button {
                     login()
                 } label: {
@@ -168,39 +190,65 @@ struct LaunchPageView: View {
     
     
     func register() {
+        if firstName == "" || lastName == "" {
+            self.error = "You must enter first and last name to make an account."
+            return
+        }
         Auth.auth().createUser(withEmail: email, password: password) {result, error in
             if let error = error {
                 print("Error!")
                 print(error.localizedDescription)
+                self.error = String(error.localizedDescription)
             } else {
                 print("successfully registered user")
                 let user = Auth.auth().currentUser
                 if let user = user {
                     let uid = user.uid
-                    thisUser.addAndGetUser(userID: uid, firstName: firstName, lastName: lastName)
+                    userModel.addAndGetUser(userID: uid, firstName: firstName, lastName: lastName)
                     userIsLoggedIn.toggle()
                 }
             }
         }
     }
-        
+    
     func login() {
-            Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
-                if let error = error {
-                    print("Error!")
-                    print(error.localizedDescription)
-                } else {
-                    print("successfully logged in")
-                    let user = Auth.auth().currentUser
-                    if let user = user {
-                        let uid = user.uid
-                        thisUser.getUser(userID: uid)
+        Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
+            if let error = error {
+                print("Error!")
+                print(error.localizedDescription)
+                self.error = String(error.localizedDescription)
+            } else {
+                print("successfully logged in")
+                let user = Auth.auth().currentUser
+                if let user = user {
+                    let uid = user.uid
+                    userModel.getUser(userID: uid)
+                    let queue = DispatchQueue(label: "login tasks")
+                    queue.asyncAfter(deadline: .now()+1){
+                        print(userModel.user.firstName)
+                        houseModel.getAndSetHouse(houseID: userModel.user.currentHouse ?? "")
+                        taskModel.loadTasks(houseID: userModel.user.currentHouse ?? "")
+                        taskModel.getTaskUpdates(houseID: userModel.user.currentHouse ?? "")
                         userIsLoggedIn.toggle()
                     }
+
                 }
             }
         }
+    }
         
+    
+    func signout() {
+        try? Auth.auth().signOut()
+        if let user = Auth.auth().currentUser {
+            let uid = user.uid
+            print("User \(uid) still logged in")
+        } else {
+            print("successfully logged out!")
+            userIsLoggedIn.toggle()
+        }
+    }
+}
         
         
     struct LaunchPageView_Previews: PreviewProvider {
@@ -208,5 +256,5 @@ struct LaunchPageView: View {
                 LaunchPageView()
             }
         }
-    }
+
 

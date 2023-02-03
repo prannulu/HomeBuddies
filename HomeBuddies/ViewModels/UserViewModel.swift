@@ -13,6 +13,7 @@ class UserViewModel: ObservableObject {
     @Published var userExists: Bool?
     
     func getUser(userID: String){
+        print("running getUser")
         let db = Firestore.firestore()
         
         let userRef = db.collection("Users").document(userID)
@@ -28,7 +29,6 @@ class UserViewModel: ObservableObject {
                                      emergencyContact: document["emergencyContact"] as? [String:String] ?? [:],
                                      medicalInfo: document["medicalInfo"] as? String ?? "",
                                      profilePic: document["profilePic"] as? String ?? "",
-                                     requestedHouse: document["requestedHouse"] as? String ?? "",
                                      currentHouse: document["currentHouse"] as? String ?? "")
                     
                     self.userExists = true
@@ -41,6 +41,7 @@ class UserViewModel: ObservableObject {
         }
     }
     func addAndGetUser(userID: String, firstName: String, lastName: String){
+        print("running addAndGetUser")
         let db = Firestore.firestore()
         db.collection("Users").document(userID).setData(["firstName" : firstName, "lastName": lastName]) { err in
             if let err = err {
@@ -54,19 +55,37 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func addRequestedHouse(houseID: String) {
+    func addToRequestedHouse(houseID: String, houseCode: String) -> Bool {
+        print("running addToRequestedHouse")
+        if houseID == "" {
+            return false
+        }
         let db = Firestore.firestore()
-        db.collection("Users").document(self.user.id).setData(["requestedHouse" : houseID], merge: true) { err in
-            if let err = err {
-                print("Error writing document: \(err)")
-            } else {
-                print("Document successfully written!")
-                self.user.requestedHouse = houseID
+        let houseRef = db.collection("Houses").document(houseID.lowercased())
+        var result = false
+        
+        houseRef.getDocument { document, error in
+            if let document = document, document.exists {
+                DispatchQueue.main.async {
+                    if document["code"] as! String == houseCode {
+                        db.collection("Users").document(self.user.id).setData(["currentHouse" : houseID], merge: true) { err in
+                            if let err = err {
+                                print("Error adding user to house: \(err)")
+                            } else {
+                                print("User added to house")
+                                self.user.currentHouse = houseID
+                            }
+                        }
+                        result = true
+                    }
+                }
             }
         }
+        return result
     }
     
     func addCurrentHouse(houseID: String) {
+        print("running addCurrentHouse")
         let db = Firestore.firestore()
         db.collection("Users").document(self.user.id).setData(["currentHouse" : houseID], merge: true) { err in
             if let err = err {
@@ -79,6 +98,7 @@ class UserViewModel: ObservableObject {
     }
     
     func addNameAndPronouns(firstName: String, lastName: String, pronouns: String) {
+        print("running addNameAndPronouns")
         let db = Firestore.firestore()
         db.collection("Users").document(self.user.id).setData(["firstName":firstName, "lastName":lastName, "pronouns" : pronouns], merge: true) { err in
             if let err = err {
@@ -93,6 +113,7 @@ class UserViewModel: ObservableObject {
     }
     
     func addBirthday(year: String, month: String, day: String) {
+        print("running addBirthday")
         let db = Firestore.firestore()
         let birthdayDict = ["year": year, "month": month, "day": day]
         db.collection("Users").document(self.user.id)
@@ -107,6 +128,7 @@ class UserViewModel: ObservableObject {
     }
     
     func addEmergencyContact(name: String, info: String, relationship: String) {
+        print("running addEmergencyContact")
         let db = Firestore.firestore()
         let emergencyContactDict = ["name": name, "info": info, "relationship": relationship]
         db.collection("Users").document(self.user.id)
@@ -121,6 +143,7 @@ class UserViewModel: ObservableObject {
     }
     
     func addMedicalInfo(medicalInfo: String) {
+        print("running addMedicalInfo")
         let db = Firestore.firestore()
         db.collection("Users").document(self.user.id).setData(["medicalInfo" : medicalInfo], merge: true) { err in
             if let err = err {
@@ -133,6 +156,7 @@ class UserViewModel: ObservableObject {
     }
     
     func addProfilePic(profilePicName: String) {
+        print("running addProfilePic")
         let db = Firestore.firestore()
         db.collection("Users").document(self.user.id).setData(["profilePic" : profilePicName], merge: true) { err in
             if let err = err {

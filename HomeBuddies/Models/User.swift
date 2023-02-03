@@ -17,7 +17,6 @@ struct User: Identifiable {
     var medicalInfo: String? = ""
     var profilePic: String? = ""
     
-    var requestedHouse: String? = ""
     var currentHouse: String? = ""
     
     

@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F616C9C298C7FAD00E4B325 /* ChoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616C9B298C7FAD00E4B325 /* ChoresView.swift */; };
+		5F616CA2298C87CF00E4B325 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CA1298C87CF00E4B325 /* Task.swift */; };
+		5F616CA4298C87E500E4B325 /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CA3298C87E500E4B325 /* TaskViewModel.swift */; };
+		5F616CA6298DA86800E4B325 /* AddTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CA5298DA86800E4B325 /* AddTaskView.swift */; };
+		5F616CA8298DC18F00E4B325 /* ExpandTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CA7298DC18F00E4B325 /* ExpandTaskView.swift */; };
 		5F88A2ED297F268800E3107D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5F88A2EC297F268800E3107D /* GoogleService-Info.plist */; };
 		5F88A2F0297F2AD900E3107D /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 5F88A2EF297F2AD900E3107D /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		5F88A2F2297F2AD900E3107D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5F88A2F1297F2AD900E3107D /* FirebaseAuth */; };
@@ -47,6 +52,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5F616C9B298C7FAD00E4B325 /* ChoresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresView.swift; sourceTree = "<group>"; };
+		5F616CA1298C87CF00E4B325 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		5F616CA3298C87E500E4B325 /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
+		5F616CA5298DA86800E4B325 /* AddTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskView.swift; sourceTree = "<group>"; };
+		5F616CA7298DC18F00E4B325 /* ExpandTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandTaskView.swift; sourceTree = "<group>"; };
 		5F88A2EC297F268800E3107D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5F88A3102980616E00E3107D /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		5F88A3512981E2CB00E3107D /* House.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = House.swift; sourceTree = "<group>"; };
@@ -97,12 +107,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5F616C9A298C7F6000E4B325 /* Chores Pages */ = {
+			isa = PBXGroup;
+			children = (
+				5F616C9B298C7FAD00E4B325 /* ChoresView.swift */,
+				5F616CA5298DA86800E4B325 /* AddTaskView.swift */,
+				5F616CA7298DC18F00E4B325 /* ExpandTaskView.swift */,
+			);
+			path = "Chores Pages";
+			sourceTree = "<group>";
+		};
 		5F88A30F2980614600E3107D /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				5F88A3102980616E00E3107D /* Theme.swift */,
 				5F88A3512981E2CB00E3107D /* House.swift */,
 				5F88A3682983657400E3107D /* User.swift */,
+				5F616CA1298C87CF00E4B325 /* Task.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -112,6 +133,7 @@
 			children = (
 				5F88A35C2983151200E3107D /* ViewOneHouse.swift */,
 				5F88A36A298365CE00E3107D /* UserViewModel.swift */,
+				5F616CA3298C87E500E4B325 /* TaskViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -121,6 +143,7 @@
 			children = (
 				5FF6CAD7297F092000A11425 /* LaunchPageView.swift */,
 				5F88A366298361D500E3107D /* UserPagesView.swift */,
+				5F616C9A298C7F6000E4B325 /* Chores Pages */,
 				5F88A376298B599200E3107D /* User Pages */,
 				5F88A377298B59BD00E3107D /* House Pages */,
 			);
@@ -329,14 +352,19 @@
 				5F88A3732989D77400E3107D /* EditProfileView.swift in Sources */,
 				5F88A3692983657400E3107D /* User.swift in Sources */,
 				5F88A367298361D500E3107D /* UserPagesView.swift in Sources */,
+				5F616CA8298DC18F00E4B325 /* ExpandTaskView.swift in Sources */,
 				5F88A3522981E2CB00E3107D /* House.swift in Sources */,
 				5F88A36B298365CE00E3107D /* UserViewModel.swift in Sources */,
 				5FF6CAD8297F092000A11425 /* LaunchPageView.swift in Sources */,
 				5F88A35D2983151200E3107D /* ViewOneHouse.swift in Sources */,
+				5F616CA2298C87CF00E4B325 /* Task.swift in Sources */,
 				5F88A36329834A7900E3107D /* HousePageView.swift in Sources */,
+				5F616C9C298C7FAD00E4B325 /* ChoresView.swift in Sources */,
 				5F88A375298B3C1500E3107D /* ChangeProfilePicView.swift in Sources */,
 				5F88A3112980616E00E3107D /* Theme.swift in Sources */,
 				5F88A35B2982FEB600E3107D /* HouseSearchView.swift in Sources */,
+				5F616CA6298DA86800E4B325 /* AddTaskView.swift in Sources */,
+				5F616CA4298C87E500E4B325 /* TaskViewModel.swift in Sources */,
 				5F88A36F2988754800E3107D /* ProfilePageView.swift in Sources */,
 				5FF6CAD6297F092000A11425 /* HomeBuddiesApp.swift in Sources */,
 			);

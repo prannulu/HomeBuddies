@@ -63,11 +63,6 @@ struct ProfilePageView: View {
                     Text("Current House: \(currentHouse)")
                 }
             }
-            if let requestedHouse = userModel.user.requestedHouse{
-                if requestedHouse != "" {
-                    Text("Requested to join: \(requestedHouse)")
-                }
-            }
         }
         .padding()
         .cornerRadius(20) /// make the background rounded

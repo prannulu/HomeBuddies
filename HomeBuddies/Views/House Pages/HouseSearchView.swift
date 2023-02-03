@@ -10,7 +10,7 @@ import SwiftUI
 struct HouseSearchView: View {
 // This is if they haven't joined or requested a house yet.
     @State var houseID = ""
-    @StateObject var thisHouse = ViewOneHouse()
+    @StateObject var searchedHouse = ViewOneHouse()
     @EnvironmentObject var userModel: UserViewModel
    
     var body: some View {
@@ -20,7 +20,7 @@ struct HouseSearchView: View {
                     Text("Hi there \(userModel.user.firstName)!")
                     Text("Find your House using the House ID and request to join it").bold()
                     TextField("Enter House ID here", text: $houseID).multilineTextAlignment(.center).padding()
-                    if let foundHouse = thisHouse.foundHouse{
+                    if let foundHouse = searchedHouse.foundHouse{
                         if foundHouse {
                             positiveResults
                         } else {
@@ -39,10 +39,11 @@ struct HouseSearchView: View {
             }
         }
     }
+    
     var positiveResults: some View {
         VStack {
-            Text("We found your house: \(thisHouse.myHouse.nickname ?? "")").foregroundColor(Color.green)
-            NavigationLink(destination: JoinHouseView(thisHouse: thisHouse.myHouse)) { Text("Tap to show details!!!!") }
+            Text("We found your house: \(searchedHouse.myHouse.id)").foregroundColor(Color.green)
+            NavigationLink(destination: JoinHouseView(houseID: houseID)) { Text("Tap to show details") }
             Text("Not the house you were looking for? Try searching again").italic()
             searchButton
         }.padding()
@@ -57,7 +58,7 @@ struct HouseSearchView: View {
     var searchButton: some View {
         Button {
             print("You searched for \(houseID)")
-            thisHouse.getAndSetHouse(houseID: houseID)
+            searchedHouse.getAndSetHouse(houseID: houseID)
 
         } label: {
             Text("Find my House").foregroundColor(.black)
@@ -71,33 +72,43 @@ struct HouseSearchView: View {
 // CREATE NEW HOUSE VIEW:
 struct CreateNewHouse: View {
     @State var houseID = ""
-    @StateObject var thisHouse = ViewOneHouse()
+    @State var houseCode = ""
+    @EnvironmentObject var houseModel: ViewOneHouse
     @EnvironmentObject var userModel: UserViewModel
+    @EnvironmentObject var taskModel: TaskViewModel
     
     var body: some View {
         NavigationView {
             VStack{
+                Button {
+                    print("houseID now is \(houseID)")
+                } label: {
+                    Text("click to print house ID")
+                }
                 Text("Hello again \(userModel.user.firstName)!")
                 Text("You're about to create a new house!").bold().foregroundColor(.purple)
                 Text("First, you will need to create a House ID This is a unique ID that will let others find your house and request to join it. Kind of like a username!")
                 TextField("Enter a new House ID here", text: $houseID).multilineTextAlignment(.center).padding()
                 
-                if let foundHouse = thisHouse.foundHouse{
-                    if foundHouse {
+                if let foundHouse = houseModel.foundHouse{
+                    if foundHouse == true {
                         Text("This ID already exists. Try a different ID").foregroundColor(.red)
                         checkIfHouseIDexists
                     } else {
                         Text("You got a unique House ID").foregroundColor(.green)
                         Text("Would you like to create house with this ID? You will not be able to change it later")
-                        
+                        Text("Please enter a secret code. This will allow others to join the house")
+                        TextField("Code", text: $houseCode)
                         Button {
-                            thisHouse.addNewHouse(houseID: houseID, creatorID: userModel.user.id, creatorName: userModel.user.firstName)
-                            thisHouse.getAndSetHouse(houseID: houseID)
+                            houseModel.addNewHouse(houseID: houseID, houseCode: houseCode, creatorID: userModel.user.id, creatorName: userModel.user.firstName)
+                            houseModel.getAndSetHouse(houseID: houseID)
+                            taskModel.loadTasks(houseID: houseID)
+                            taskModel.getTaskUpdates(houseID: houseID)
                             userModel.addCurrentHouse(houseID: houseID)
                             // goes to housepage view when the current house is updated
                         } label: {
-                            Text("Yes!")
-                        }
+                            Text("Create House")
+                        }.disabled(houseCode.isEmpty)
                     }
                 } else {
                     checkIfHouseIDexists
@@ -108,7 +119,7 @@ struct CreateNewHouse: View {
     var checkIfHouseIDexists: some View {
         Button {
             print("You searched for \(houseID)")
-            thisHouse.getAndSetHouse(houseID: houseID)
+            houseModel.getAndSetHouse(houseID: houseID)
 
         } label: {
             Text("Check if this House ID is available").foregroundColor(.black)
@@ -120,27 +131,49 @@ struct CreateNewHouse: View {
 
 // JOIN HOUSE VIEW
 struct JoinHouseView: View {
-    var thisHouse: House
+    var houseID: String
+    @State var houseCode = ""
+    @State var message = ""
+    @EnvironmentObject var houseModel: ViewOneHouse
     @EnvironmentObject var userModel: UserViewModel
+    @EnvironmentObject var taskModel: TaskViewModel
     
     var body: some View {
         VStack{
-            Text("House Nickname: \(thisHouse.nickname ?? "")")
+            Text("House Name: \(houseModel.myHouse.id)")
             Text("Who lives here? ")
-            ForEach(thisHouse.roommates.sorted(by: >), id: \.key){ key, value in
+            ForEach(houseModel.myHouse.roommates.sorted(by: >), id: \.key){ key, value in
                 Text("  - \(value)")
             }
-            Text("Any pets? \(String(thisHouse.pets ?? false))")
-        }
+            Text("Any pets? \(String(houseModel.myHouse.pets ?? false))")
+        }.onAppear {houseModel.getAndSetHouse(houseID: houseID) }
+        Text("Enter House Code to join:")
+        TextField("House Code", text: $houseCode)
+            .foregroundColor(Color.pink)
+            .border(Color.blue)
+        
         Button {
-            // request to join
-            userModel.addRequestedHouse(houseID: thisHouse.id)
-            // Needs to: update requestedhouse in user
+            houseModel.addRoommate(houseCode: houseCode, userID: userModel.user.id, firstName: userModel.user.firstName)
+            print(houseID)
+            taskModel.loadTasks(houseID: houseID)
+            taskModel.getTaskUpdates(houseID: houseID)
+            let doesCodeMatch = userModel.addToRequestedHouse(houseID: houseModel.myHouse.id, houseCode: self.houseCode)
+            if doesCodeMatch == false {
+                self.message = "Code doesn't match. Try again"
+            }
         } label: {
-            Text("Request to join")
+            Text("Join House")
         }.buttonStyle(.borderedProminent)
         .tint(.green)
+        
+        if message != "" {
+            Text(message).foregroundColor(.red)
+        }
 
+    }
+    
+    var doesntMatch : some View {
+        Text("Code doesn't match")
     }
 }
 
