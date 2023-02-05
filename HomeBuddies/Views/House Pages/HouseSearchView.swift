@@ -105,6 +105,8 @@ struct CreateNewHouse: View {
                             taskModel.loadTasks(houseID: houseID)
                             taskModel.getTaskUpdates(houseID: houseID)
                             userModel.addCurrentHouse(houseID: houseID)
+                            houseModel.getAndSetRoommates()
+                            houseModel.getRoommateUpdates()
                             // goes to housepage view when the current house is updated
                         } label: {
                             Text("Create House")
@@ -142,8 +144,8 @@ struct JoinHouseView: View {
         VStack{
             Text("House Name: \(houseModel.myHouse.id)")
             Text("Who lives here? ")
-            ForEach(houseModel.myHouse.roommates.sorted(by: >), id: \.key){ key, value in
-                Text("  - \(value)")
+            ForEach(houseModel.roommates){ roommate in
+                Text("  - \(roommate.firstName)")
             }
             Text("Any pets? \(String(houseModel.myHouse.pets ?? false))")
         }.onAppear {houseModel.getAndSetHouse(houseID: houseID) }
@@ -153,10 +155,10 @@ struct JoinHouseView: View {
             .border(Color.blue)
         
         Button {
-            houseModel.addRoommate(houseCode: houseCode, userID: userModel.user.id, firstName: userModel.user.firstName)
-            print(houseID)
             taskModel.loadTasks(houseID: houseID)
             taskModel.getTaskUpdates(houseID: houseID)
+            houseModel.getAndSetRoommates()
+            houseModel.getRoommateUpdates()
             let doesCodeMatch = userModel.addToRequestedHouse(houseID: houseModel.myHouse.id, houseCode: self.houseCode)
             if doesCodeMatch == false {
                 self.message = "Code doesn't match. Try again"

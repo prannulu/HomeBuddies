@@ -10,8 +10,5 @@ import Foundation
 struct House: Identifiable {
     var id: String
     var code: String
-    var roommates: [String: String]
-    
-    var nickname: String? = ""
     var pets: Bool? = false
 }

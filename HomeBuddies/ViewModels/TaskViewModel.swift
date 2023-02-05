@@ -28,7 +28,10 @@ class TaskViewModel: ObservableObject {
                     tasksLoaded.append(Task(id: document.documentID,
                                             description: document.data()["description"] as! String,
                                             houseID: houseID,
-                                            createdBy: document.data()["createdBy"] as! String))
+                                            createdBy: document.data()["createdBy"] as! String,
+                                            notes: document.data()["notes"] as? String,
+                                            assignedTo: document.data()["assignedTo"] as! String))
+                
                 }
                 self.taskList = tasksLoaded
             }
@@ -55,13 +58,16 @@ class TaskViewModel: ObservableObject {
                     tasksLoaded.append(Task(id: document.documentID,
                                             description: document.data()["description"] as! String,
                                             houseID: houseID,
-                                            createdBy: document.data()["createdBy"] as? String ?? ""))
+                                            createdBy: document.data()["createdBy"] as? String ?? "",
+                                            notes: document.data()["notes"] as? String ?? "",
+                                            assignedTo: document.data()["assignedTo"] as? String ?? ""
+                                           ))
                 }
                 self.taskList = tasksLoaded
             }
     }
     
-    func addNewTask(houseID: String, description: String, creatorID: String){
+    func addNewTask(houseID: String, description: String, creatorID: String, notes: String){
         print("running addNewTask")
         if houseID == "" {
             print("running getTask, but houseID empty")
@@ -71,7 +77,9 @@ class TaskViewModel: ObservableObject {
         db.collection("Tasks").addDocument(data: [
             "houseID": houseID,
             "description": description,
-            "createdBy": creatorID
+            "createdBy": creatorID,
+            "notes": notes,
+            "assignedTo": ""
         ]) { err in
             if let err = err {
                 print("Error adding task to DB: \(err)")
@@ -89,6 +97,30 @@ class TaskViewModel: ObservableObject {
                 print("Error deleting task from DB: \(err)")
             } else {
                 print("Deleted task from DB successfully!")
+            }
+        }
+    }
+    
+    func editTask(taskID: String, notes: String){
+        print("running editTask")
+        let db = Firestore.firestore()
+        db.collection("Tasks").document(taskID).setData(["notes": notes], merge: true) { err in
+            if let err = err {
+                print("Error adding user to house: \(err)")
+            } else {
+                print("Notes added to task")
+            }
+        }
+    }
+    
+    func assignTaskTo(taskID: String, userID: String){
+        print("running assignTaskTo")
+        let db = Firestore.firestore()
+        db.collection("Tasks").document(taskID).setData(["assignedTo": userID], merge: true) { err in
+            if let err = err {
+                print("Error adding user to house: \(err)")
+            } else {
+                print("Task Assigned to user")
             }
         }
     }

@@ -123,14 +123,6 @@ struct LaunchPageView: View {
                 }
             }
             .frame(width: 350)
-            //          .onAppear {
-            //                Auth.auth().addStateDidChangeListener { auth, user in
-            //                    if user != nil {
-            //                        userIsLoggedIn.toggle()
-            //                    }
-            //
-            //                }
-            //            }
         }
     }
     
@@ -178,13 +170,6 @@ struct LaunchPageView: View {
                 }
             }
             .frame(width: 350)
-            //            .onAppear {
-            //                Auth.auth().addStateDidChangeListener { auth, user in
-            //                    if user != nil {
-            //                        userIsLoggedIn.toggle()
-            //                    }
-            //                }
-            //            }
         }
     }
     
@@ -224,11 +209,15 @@ struct LaunchPageView: View {
                     let uid = user.uid
                     userModel.getUser(userID: uid)
                     let queue = DispatchQueue(label: "login tasks")
-                    queue.asyncAfter(deadline: .now()+1){
+                    queue.asyncAfter(deadline: .now()+0.5){
                         print(userModel.user.firstName)
                         houseModel.getAndSetHouse(houseID: userModel.user.currentHouse ?? "")
                         taskModel.loadTasks(houseID: userModel.user.currentHouse ?? "")
                         taskModel.getTaskUpdates(houseID: userModel.user.currentHouse ?? "")
+                    }
+                    queue.asyncAfter(deadline: .now()+1){
+                        houseModel.getAndSetRoommates()
+                        houseModel.getRoommateUpdates()
                         userIsLoggedIn.toggle()
                     }
 

@@ -22,11 +22,7 @@ struct ChoresView: View {
                 List(self.taskModel.taskList) { task in
                     VStack{
                         ExpandTaskView(task: task)
-//                        Button {
-//                            taskModel.deleteTask(taskID: task.id)
-//                        } label: {
-//                            Text("Delete this task").foregroundColor(.red)
-//                        }
+//                        
                        
                     }
                 }

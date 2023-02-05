@@ -9,8 +9,9 @@ import Foundation
 import Firebase
 
 class ViewOneHouse: ObservableObject {
-    @Published var myHouse = House(id: "", code: "", roommates: [ : ])
+    @Published var myHouse = House(id: "", code: "")
     @Published var foundHouse: Bool?
+    @Published var roommates = [User]()
     
     func findHouse(houseID: String){
         print("running findHouse")
@@ -41,19 +42,14 @@ class ViewOneHouse: ObservableObject {
         
         houseRef.getDocument { document, error in
             if let document = document, document.exists {
-                //let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
                 DispatchQueue.main.async {
                     self.myHouse = House(id: document.documentID,
                                          code: document["code"] as! String,
-                                         roommates: document["roommates"] as? [String:String] ?? [:],
-                                         nickname: document["nickname"] as? String ?? "",
                                          pets: document["pets"] as? Bool ?? false)
-                    //print("Document data: \(dataDescription)")
                     self.foundHouse = true
                 }
             } else {
                 DispatchQueue.main.async {
-                    //print("Document does not exist")
                     self.foundHouse = false
                 }
             }
@@ -72,46 +68,58 @@ class ViewOneHouse: ObservableObject {
         }
     }
     
-    func addRoommate(houseCode: String, userID: String, firstName: String){
-        print("running addRoommate")
-        if houseCode != myHouse.code {
-            return
-        }
-        var roommates = ["":""]
+    func getAndSetRoommates() {
+        print("running getAndSetRoommates with houseiD \(myHouse.id)")
         let db = Firestore.firestore()
-        let houseRef = db.collection("Houses").document(self.myHouse.id.lowercased())
-        houseRef.getDocument { document, error in
-            if let document = document, document.exists {
-                roommates = document["roommates"] as? [String:String] ?? ["":""]
-                
-                roommates[userID] = firstName
-                houseRef.setData(["roommates": roommates], merge: true) { err in
-                    if let err = err {
-                        print("Error writing document: \(err)")
-                    } else {
-                        print("roommate successfully added to house!")
-                    }
+        db.collection("Users").whereField("currentHouse", isEqualTo: myHouse.id.lowercased()).getDocuments() { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                var roommatesLoaded = [User]()
+                for document in querySnapshot!.documents {
+                    print("document EXISTS")
+                    roommatesLoaded.append(User(id: document.documentID,
+                                                firstName: document.data()["firstName"] as! String,
+                                                lastName: "lastName",
+                                                pronouns: document.data()["pronouns"] as? String ?? "",
+                                                birthday: document.data()["birthday"] as? [String:String] ?? [:],
+                                                emergencyContact: document.data()["emergencyContact"] as? [String:String] ?? [:],
+                                                medicalInfo: document.data()["medicalInfo"] as? String ?? "",
+                                                profilePic: document.data()["profilePic"] as? String ?? "",
+                                                currentHouse: document.data()["currentHouse"] as? String ?? ""))
                 }
+                self.roommates = roommatesLoaded
+                
+                print(self.roommates)
             }
         }
     }
-    func removeRoommate(userID: String){
-        print("running removeRoommate")
-        var roommates = ["":""]
+    
+    func getRoommateUpdates(){
+        print("running getRoommateUpdates")
+        
         let db = Firestore.firestore()
-        let houseRef = db.collection("Houses").document(self.myHouse.id.lowercased())
-        houseRef.getDocument { document, error in
-            if let document = document, document.exists {
-                roommates = document["roommates"] as? [String:String] ?? ["":""]
-                roommates.removeValue(forKey: userID)
-                houseRef.setData(["roommates": roommates], merge: true) { err in
-                    if let err = err {
-                        print("Error writing document: \(err)")
-                    } else {
-                        print("roommate successfully removed from house!")
-                    }
+        
+        db.collection("Users").whereField("currentHouse", isEqualTo: myHouse.id.lowercased())
+            .addSnapshotListener { querySnapshot, error in
+                guard (querySnapshot?.documents) != nil else {
+                    print("Error fetching documents: \(error!)")
+                    return
                 }
+                var roommatesLoaded = [User]()
+                for document in querySnapshot!.documents {
+                    roommatesLoaded.append(User(id: document.documentID,
+                                                firstName: document.data()["firstName"] as! String,
+                                                lastName: "lastName",
+                                                pronouns: document.data()["pronouns"] as? String ?? "",
+                                                birthday: document.data()["birthday"] as? [String:String] ?? [:],
+                                                emergencyContact: document.data()["emergencyContact"] as? [String:String] ?? [:],
+                                                medicalInfo: document.data()["medicalInfo"] as? String ?? "",
+                                                profilePic: document.data()["profilePic"] as? String ?? "",
+                                                currentHouse: document.data()["currentHouse"] as? String ?? ""))
+                }
+                self.roommates = roommatesLoaded
+                
             }
-        }
     }
 }

@@ -14,6 +14,7 @@ struct AddTaskView: View {
     @EnvironmentObject var taskModel: TaskViewModel
     
     @State var description = ""
+    @State var notes = ""
     
     var body: some View {
         ZStack {
@@ -21,24 +22,37 @@ struct AddTaskView: View {
                     // PopUp background color
                     Color.green.opacity(show ? 0.3 : 0)
                     .edgesIgnoringSafeArea(.all)
-                    .cornerRadius(2)
+                    .cornerRadius(10)
                     // PopUp Window
                     VStack(alignment: .center, spacing: 0) {
                         Text("Add New Task")
                             .frame(maxWidth: .infinity)
                             .frame(height: 45, alignment: .center)
-                            .font(Font.system(size: 23, weight: .semibold))
-                            .foregroundColor(Color.white)
-                        TextField("Description", text: $description)
-                            .multilineTextAlignment(.center)
-                            .font(Font.system(size: 16, weight: .semibold))
-                            .padding(EdgeInsets(top: 20, leading: 25, bottom: 20, trailing: 25))
-                            .foregroundColor(Color.white)
+                            .font(.headline)
+                            .foregroundColor(Color.black)
+                            .underline()
+                        HStack{
+                            Text("Name of Task:")
+                            TextField("Enter Description", text: $description)
+                                .textFieldStyle(.plain)
+                                .padding(EdgeInsets(top: 20, leading: 25, bottom: 20, trailing: 25))
+                                .foregroundColor(Color.green)
+                        }
+                        HStack{
+                            Text("Additional notes about the task:")
+                            TextField("Enter Notes (Optional)", text: $notes)
+                                .multilineTextAlignment(.center)
+                                .font(Font.system(size: 16, weight: .semibold))
+                                .padding(EdgeInsets(top: 20, leading: 25, bottom: 20, trailing: 25))
+                                .foregroundColor(Color.white)
+                        }
                         Button(action: {
                             // Add task to backend
-                            taskModel.addNewTask(houseID: houseModel.myHouse.id, description: description, creatorID: userModel.user.id)
+                            taskModel.addNewTask(houseID: houseModel.myHouse.id, description: description, creatorID: userModel.user.id,
+                                                 notes: notes)
                             print(description)
                             description = ""
+                            notes = ""
                             withAnimation(.linear(duration: 0.3)) {
                                 show = false
                             }
@@ -49,6 +63,7 @@ struct AddTaskView: View {
                                 .foregroundColor(.black)
                                 .bold()
                         }).buttonStyle(PlainButtonStyle())
+                            .disabled(description.isEmpty)
                     }
                     .frame(maxWidth: 300)
                     .border(Color.white, width: 2)
