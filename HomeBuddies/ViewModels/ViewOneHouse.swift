@@ -12,10 +12,19 @@ class ViewOneHouse: ObservableObject {
     @Published var myHouse = House(id: "", code: "")
     @Published var foundHouse: Bool?
     @Published var roommates = [User]()
+    @Published var updates = [String]()
+    
+    func resetHouse() {
+        self.myHouse =  House(id: "", code: "")
+        self.foundHouse = nil
+        self.roommates = [User]()
+        self.updates = [String]()
+    }
     
     func findHouse(houseID: String){
         print("running findHouse")
         if houseID == "" {
+            self.foundHouse = false
             return
         }
         let db = Firestore.firestore()
@@ -29,7 +38,7 @@ class ViewOneHouse: ObservableObject {
         }
     }
     
-    func getAndSetHouse(houseID: String)  {
+    func getAndSetHouse(houseID: String, completion:(()->Void)? = nil)  {
         print("running getAndSetHouse")
         if houseID == "" {
             print("running getAndSetHouse but houseID empty")
@@ -37,7 +46,6 @@ class ViewOneHouse: ObservableObject {
         }
         
         let db = Firestore.firestore()
-        
         let houseRef = db.collection("Houses").document(houseID.lowercased())
         
         houseRef.getDocument { document, error in
@@ -45,8 +53,11 @@ class ViewOneHouse: ObservableObject {
                 DispatchQueue.main.async {
                     self.myHouse = House(id: document.documentID,
                                          code: document["code"] as! String,
-                                         pets: document["pets"] as? Bool ?? false)
+                    updates: document["updates"] as? [String] ?? [])
                     self.foundHouse = true
+                    if let completion = completion {
+                        completion()
+                    }
                 }
             } else {
                 DispatchQueue.main.async {
@@ -56,10 +67,10 @@ class ViewOneHouse: ObservableObject {
         }
     }
     
-    func addNewHouse(houseID: String, houseCode: String, creatorID: String, creatorName: String) {
+    func addNewHouse(houseID: String, houseCode: String) {
         print("running addNewHouse")
         let db = Firestore.firestore()
-        db.collection("Houses").document(houseID.lowercased()).setData(["roommates": [creatorID:creatorName], "code": houseCode]) { err in
+        db.collection("Houses").document(houseID.lowercased()).setData(["code": houseCode, "updates": ["The \(houseID) house was created!"]]) { err in
             if let err = err {
                 print("Error writing document: \(err)")
             } else {
@@ -80,7 +91,7 @@ class ViewOneHouse: ObservableObject {
                     print("document EXISTS")
                     roommatesLoaded.append(User(id: document.documentID,
                                                 firstName: document.data()["firstName"] as! String,
-                                                lastName: "lastName",
+                                                lastName: document.data()["lastName"] as! String,
                                                 pronouns: document.data()["pronouns"] as? String ?? "",
                                                 birthday: document.data()["birthday"] as? [String:String] ?? [:],
                                                 emergencyContact: document.data()["emergencyContact"] as? [String:String] ?? [:],
@@ -110,7 +121,7 @@ class ViewOneHouse: ObservableObject {
                 for document in querySnapshot!.documents {
                     roommatesLoaded.append(User(id: document.documentID,
                                                 firstName: document.data()["firstName"] as! String,
-                                                lastName: "lastName",
+                                                lastName: document.data()["lastName"] as! String,
                                                 pronouns: document.data()["pronouns"] as? String ?? "",
                                                 birthday: document.data()["birthday"] as? [String:String] ?? [:],
                                                 emergencyContact: document.data()["emergencyContact"] as? [String:String] ?? [:],
@@ -121,5 +132,70 @@ class ViewOneHouse: ObservableObject {
                 self.roommates = roommatesLoaded
                 
             }
+    }
+    
+    func addUpdate(update: String) {
+        let db = Firestore.firestore()
+        var updates = [String]()
+        db.collection("Houses").document(myHouse.id).getDocument { document, error in
+            if let document = document, document.exists {
+                print(document["updates"] ?? ["somethingwrong"])
+                for update in document["updates"] as! [String]{
+                    updates.append(update)
+                }
+                
+            } else {
+                print("error occured when adding update: \(update)")
+            }
+        }
+        updates.append(update)
+        print(updates)
+        
+        db.collection("Houses").document(myHouse.id).updateData(["updates": FieldValue.arrayUnion([update])]){ err in
+            if let err = err {
+                print("Error writing document: \(err)")
+            } else {
+                print("Document successfully written!")
+                self.myHouse.updates = updates
+                self.updates = updates
+            }
+        }
+    }
+    func getHouseUpdate() {
+        print("running getRoommateUpdates")
+        var newUpdates = [String]()
+        let db = Firestore.firestore()
+        
+        db.collection("Houses").document(myHouse.id)
+            .addSnapshotListener { documentSnapshot, error in
+                guard let document = documentSnapshot else {
+                    print("Error fetching documents: \(error!)")
+                    return
+                }
+                
+                for update in document["updates"] as! [String]{
+                    newUpdates.append(update)
+                }
+                newUpdates.reverse()
+
+                self.updates = newUpdates
+            }
+            
+        }
+    
+    func clearHouseUpdate(clearedBy: String) {
+        print("running clearHouseUpdate")
+        let db = Firestore.firestore()
+        
+        db.collection("Houses").document(myHouse.id)
+            .setData(["updates":["\(clearedBy) has cleared the House Feed"]], merge: true) { err in
+            if let err = err {
+                print("Error writing document: \(err)")
+            } else {
+                print("Document successfully written!")
+                self.updates = ["\(clearedBy) has cleared the House Feed"]
+                self.myHouse.updates = ["\(clearedBy) has cleared the House Feed"]
+            }
+        }
     }
 }

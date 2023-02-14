@@ -35,8 +35,7 @@ struct LaunchPageView: View {
     var content: some View {
         NavigationView {
             ZStack {
-                Color.green
-                    .opacity(0.7)
+                Color.themeFour
                     .ignoresSafeArea()
                 
                 VStack{
@@ -45,14 +44,31 @@ struct LaunchPageView: View {
                         .scaledToFit()
                         .clipShape(Circle())
                         .frame(width: 200, height: 200)
-                    Text("~ HomeBuddies ~").font(.title).foregroundColor(.white).bold()
+                    Text("~ HomeBuddies ~").font(.title)
+                        .foregroundColor(Color.themeAccent)
+                        .bold()
                     Divider()
-                    NavigationLink(destination: signin) {
-                        Text("Login to existing account").padding()
-                    }
-                    NavigationLink(destination: signup) {
-                        Text("Create new account")
-                    }
+                    Spacer()
+                        .frame(height: 30)
+                    Capsule()
+                        .fill(Color.themeTertiary)
+                        .padding(.horizontal, 60)
+                        .frame(height: 50)
+                        .overlay(NavigationLink(destination: signin) {
+                            Text("Login to existing account").padding().foregroundColor(.white)
+                                .bold()
+                        })
+                    Spacer()
+                        .frame(height: 20)
+                    Capsule()
+                        .fill(Color.themeTertiary)
+                        .padding(.horizontal, 60)
+                        .frame(height: 50)
+                        .overlay(NavigationLink(destination: signup) {
+                            Text("Create new account").padding()
+                                .foregroundColor(.white)
+                                .bold()
+                        })
                 }
             }
         }
@@ -60,8 +76,8 @@ struct LaunchPageView: View {
     
     var signup: some View {
         ZStack{
-            Color.green
-                .opacity(0.3)
+            Color.themeTertiary
+                .opacity(0.4)
                 .ignoresSafeArea()
             VStack(spacing: 20){
                 Section {
@@ -69,11 +85,12 @@ struct LaunchPageView: View {
                         .bold()
                         .offset(y: -100)
                         .font(.title)
+                        .foregroundColor(Color.themeFour)
                     Text("Let's get started.").offset(y: -100)
+                        .foregroundColor(Color.themeFour)
                 }
                 Section {
                     TextField("First Name", text: $firstName)
-                        .foregroundColor(.white)
                         .textFieldStyle(.plain)
                         .bold()
                     
@@ -82,7 +99,6 @@ struct LaunchPageView: View {
                         .foregroundColor(.black)
                     
                     TextField("LastName", text: $lastName)
-                        .foregroundColor(.white)
                         .textFieldStyle(.plain)
                         .bold()
                     
@@ -91,7 +107,6 @@ struct LaunchPageView: View {
                         .foregroundColor(.black)
                     
                     TextField("Email", text: $email)
-                        .foregroundColor(.white)
                         .textFieldStyle(.plain)
                         .bold()
                     
@@ -100,7 +115,6 @@ struct LaunchPageView: View {
                         .foregroundColor(.black)
                     
                     SecureField("Password", text: $password)
-                        .foregroundColor(.white)
                         .textFieldStyle(.plain)
                         .bold()
                     
@@ -116,8 +130,8 @@ struct LaunchPageView: View {
                     register()
                 } label: {
                     Text("Sign Up")
-                        .frame(width: 200, height: 40)
-                        .background(RoundedRectangle(cornerRadius: 10, style:.continuous).fill(.linearGradient(colors:[.green, .black], startPoint: .top, endPoint: .bottomTrailing)))
+                        .frame(width: 150, height: 40)
+                        .background(RoundedRectangle(cornerRadius: 20, style:.continuous).fill(.linearGradient(colors:[Color.themeAccent, .black], startPoint: .top, endPoint: .bottomTrailing)))
                         .foregroundColor(.white)
                         .bold()
                 }
@@ -128,17 +142,18 @@ struct LaunchPageView: View {
     
     var signin: some View {
         ZStack {
-            Color.green
-                .opacity(0.3)
+            Color.themeTertiary
+                .opacity(0.4)
                 .ignoresSafeArea()
             VStack(spacing: 20){
                 Text("Welcome Back!")
                     .bold()
                     .offset(y: -100)
                     .font(.title)
+                    .foregroundColor(Color.themeFour)
                 Text("Please sign in to continue").offset(y: -100)
+                    .foregroundColor(Color.themeFour)
                 TextField("Email", text: $email)
-                    .foregroundColor(.white)
                     .textFieldStyle(.plain)
                     .bold()
                 
@@ -147,7 +162,6 @@ struct LaunchPageView: View {
                     .foregroundColor(.black)
                 
                 SecureField("Password", text: $password)
-                    .foregroundColor(.white)
                     .textFieldStyle(.plain)
                     .bold()
                 
@@ -158,13 +172,13 @@ struct LaunchPageView: View {
                 if self.error != "" {
                     Text(error).foregroundColor(.red)
                 }
-                
+                Spacer().frame(height: 30)
                 Button {
                     login()
                 } label: {
                     Text("Login")
-                        .frame(width: 200, height: 40)
-                        .background(RoundedRectangle(cornerRadius: 10, style:.continuous).fill(.linearGradient(colors:[.green, .black], startPoint: .top, endPoint: .bottomTrailing)))
+                        .frame(width: 150, height: 40)
+                        .background(RoundedRectangle(cornerRadius: 20, style:.continuous).fill(.linearGradient(colors:[Color.themeAccent, .black], startPoint: .top, endPoint: .bottomTrailing)))
                         .foregroundColor(.white)
                         .bold()
                 }
@@ -207,20 +221,19 @@ struct LaunchPageView: View {
                 let user = Auth.auth().currentUser
                 if let user = user {
                     let uid = user.uid
-                    userModel.getUser(userID: uid)
-                    let queue = DispatchQueue(label: "login tasks")
-                    queue.asyncAfter(deadline: .now()+0.5){
-                        print(userModel.user.firstName)
-                        houseModel.getAndSetHouse(houseID: userModel.user.currentHouse ?? "")
-                        taskModel.loadTasks(houseID: userModel.user.currentHouse ?? "")
-                        taskModel.getTaskUpdates(houseID: userModel.user.currentHouse ?? "")
-                    }
-                    queue.asyncAfter(deadline: .now()+1){
-                        houseModel.getAndSetRoommates()
-                        houseModel.getRoommateUpdates()
+                    _Concurrency.Task{
+                        userModel.getUser(userID: uid) { thisUser in
+                            houseModel.getAndSetHouse(houseID: thisUser.currentHouse ?? "") {
+                                houseModel.getAndSetRoommates()
+                                houseModel.getRoommateUpdates()
+                                houseModel.getHouseUpdate()
+                                
+                            }
+                            taskModel.loadTasks(houseID: thisUser.currentHouse ?? "")
+                            taskModel.getTaskUpdates(houseID: thisUser.currentHouse ?? "")
+                        }
                         userIsLoggedIn.toggle()
                     }
-
                 }
             }
         }

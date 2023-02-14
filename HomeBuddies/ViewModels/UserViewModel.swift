@@ -12,7 +12,7 @@ class UserViewModel: ObservableObject {
     @Published var user = User(id: "", firstName: "", lastName: "")
     @Published var userExists: Bool?
     
-    func getUser(userID: String){
+    func getUser(userID: String, completion: ((User)->Void)? = nil){
         print("running getUser")
         let db = Firestore.firestore()
         
@@ -32,6 +32,9 @@ class UserViewModel: ObservableObject {
                                      currentHouse: document["currentHouse"] as? String ?? "")
                     
                     self.userExists = true
+                    if let completion = completion {
+                        completion(self.user)
+                    }
                 }
             } else {
                 DispatchQueue.main.async {
@@ -55,39 +58,40 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func addToRequestedHouse(houseID: String, houseCode: String) -> Bool {
+    func addToRequestedHouse(houseID: String, houseCode: String, completion:((Bool)->Void)?) {
         print("running addToRequestedHouse")
         if houseID == "" {
-            return false
+            return
         }
         let db = Firestore.firestore()
         let houseRef = db.collection("Houses").document(houseID.lowercased())
-        var result = false
         
         houseRef.getDocument { document, error in
             if let document = document, document.exists {
-                DispatchQueue.main.async {
-                    if document["code"] as! String == houseCode {
-                        db.collection("Users").document(self.user.id).setData(["currentHouse" : houseID], merge: true) { err in
-                            if let err = err {
-                                print("Error adding user to house: \(err)")
-                            } else {
-                                print("User added to house")
+                let codeMatches = document["code"] as! String == houseCode
+                if codeMatches{
+                    db.collection("Users").document(self.user.id).setData(["currentHouse" : houseID], merge: true) { err in
+                        if let err = err {
+                            print("Error adding user to house: \(err)")
+                        } else {
+                            print("User added to house")
+                            DispatchQueue.main.async {
                                 self.user.currentHouse = houseID
                             }
                         }
-                        result = true
                     }
+                }
+                if let completion = completion {
+                    completion(codeMatches)
                 }
             }
         }
-        return result
     }
     
     func addCurrentHouse(houseID: String) {
         print("running addCurrentHouse")
         let db = Firestore.firestore()
-        db.collection("Users").document(self.user.id).setData(["currentHouse" : houseID], merge: true) { err in
+        db.collection("Users").document(self.user.id).setData(["currentHouse" : houseID.lowercased()], merge: true) { err in
             if let err = err {
                 print("Error writing document: \(err)")
             } else {
@@ -118,13 +122,13 @@ class UserViewModel: ObservableObject {
         let birthdayDict = ["year": year, "month": month, "day": day]
         db.collection("Users").document(self.user.id)
             .setData(["birthday" : birthdayDict], merge: true) { err in
-            if let err = err {
-                print("Error writing document: \(err)")
-            } else {
-                print("Document successfully written!")
-                self.user.birthday = birthdayDict
+                if let err = err {
+                    print("Error writing document: \(err)")
+                } else {
+                    print("Document successfully written!")
+                    self.user.birthday = birthdayDict
+                }
             }
-        }
     }
     
     func addEmergencyContact(name: String, info: String, relationship: String) {
@@ -133,13 +137,13 @@ class UserViewModel: ObservableObject {
         let emergencyContactDict = ["name": name, "info": info, "relationship": relationship]
         db.collection("Users").document(self.user.id)
             .setData(["emergencyContact" : emergencyContactDict], merge: true) { err in
-            if let err = err {
-                print("Error writing document: \(err)")
-            } else {
-                print("Document successfully written!")
-                self.user.emergencyContact = emergencyContactDict
+                if let err = err {
+                    print("Error writing document: \(err)")
+                } else {
+                    print("Document successfully written!")
+                    self.user.emergencyContact = emergencyContactDict
+                }
             }
-        }
     }
     
     func addMedicalInfo(medicalInfo: String) {

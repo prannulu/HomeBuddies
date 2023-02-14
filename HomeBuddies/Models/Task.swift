@@ -12,6 +12,7 @@ struct Task: Identifiable {
     var description: String
     var houseID: String
     var createdBy: String
-    var notes: String? = ""
+    var notes: String? = "N/A"
     var assignedTo: String
+    var status: String? = "Not yet started"
 }

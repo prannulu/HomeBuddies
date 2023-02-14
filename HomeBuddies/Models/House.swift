@@ -10,5 +10,5 @@ import Foundation
 struct House: Identifiable {
     var id: String
     var code: String
-    var pets: Bool? = false
+    var updates = [String]()
 }

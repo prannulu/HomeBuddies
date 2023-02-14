@@ -8,42 +8,75 @@
 import SwiftUI
 
 struct ProfilePageView: View {
+    var signoutFunc: () -> Void
     @EnvironmentObject var userModel: UserViewModel
+    @EnvironmentObject var taskModel: TaskViewModel
    
     var body: some View {
         NavigationView {
             ZStack {
-                Color.pink
-                    .opacity(0.4)
-                    .ignoresSafeArea()
-                VStack {
-                    HStack {
-                        profilePicView
-                        
-                        VStack {
-                            Section {
-                                Text("\(userModel.user.firstName) \(userModel.user.lastName)")
-                                    .font(.largeTitle)
-                                
-                                if let pronouns = userModel.user.pronouns{
-                                    if pronouns != "" {
-                                        Text("\(pronouns)")
-                                            .font(.subheadline)
-                                            .foregroundColor(.gray)
+                Color.themeBackground
+                    .edgesIgnoringSafeArea(.all)
+                
+                    VStack {
+                        Rectangle()
+                            .fill(Color.themeTertiary)
+                            .frame(height: 250)
+                            .edgesIgnoringSafeArea(.top)
+                            .overlay(
+                                HStack {
+                                    profilePicView
+                                    
+                                    VStack {
+                                        Section {
+                                            Text("\(userModel.user.firstName) \(userModel.user.lastName)")
+                                                .font(.largeTitle).foregroundColor(Color.themeFour)
+                                            
+                                            if let pronouns = userModel.user.pronouns{
+                                                if pronouns != "" {
+                                                    Text("\(pronouns)").italic()
+                                                        .font(.subheadline)
+                                                        .foregroundColor(.white)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
+                                    .padding(.horizontal, 2)
+                                    .offset(y:40)
+                            )
+                                .fontWeight(.bold)
+                                .offset(y:-80)
+                            
+                        Group {
+                            HStack {
+                                aboutMeView
+                                emergencyContactView
                             }
-                        }
-                    }
-                    aboutMeView
-                    emergencyContactView
-                    NavigationLink(destination: EditProfileView()) {
-                        Text("Edit profile information")
-                            .padding()
-                    }
+                            HStack (spacing: 50){
+                                NavigationLink(destination: EditProfileView()) {
+                                    Text("Edit profile information")
+                                }
+                                signoutbutton
+                            }
+                            Divider().frame(height: 2).overlay(Color.themeTertiary)
+                          
+                        }.offset(y:-80)
+                            .font(.system(size: 14))
+                        
+                            //Spacer()
+                        VStack {
+                            Text("Tasks assigned to me").bold()
+                            myTasks
+                        }.offset(y:-80)
+                            
+                            
+                        
                 }
             }
-            .navigationTitle("Profile Page")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            
         }
     }
     
@@ -57,10 +90,10 @@ struct ProfilePageView: View {
                     Text("Birthday: \(birthday["day"] ?? "") \(birthday["month"] ?? ""), \(birthday["year"] ?? "")")
                 }
             }
-            
-            if let currentHouse = userModel.user.currentHouse{
-                if currentHouse != "" {
-                    Text("Current House: \(currentHouse)")
+            if let medicalInfo = userModel.user.medicalInfo{
+                if medicalInfo != "" {
+                    Text("Allergies/Medical Info").bold().underline()
+                    Text("\(medicalInfo)")
                 }
             }
         }
@@ -68,7 +101,7 @@ struct ProfilePageView: View {
         .cornerRadius(20) /// make the background rounded
         .overlay( /// apply a rounded border
             RoundedRectangle(cornerRadius: 20)
-                .stroke(.red, lineWidth: 2)
+                .stroke(Color.themeAccent, lineWidth: 1)
         )
     }
     
@@ -91,19 +124,8 @@ struct ProfilePageView: View {
         .cornerRadius(20) /// make the background rounded
         .overlay( /// apply a rounded border
             RoundedRectangle(cornerRadius: 20)
-                .stroke(.red, lineWidth: 2)
+                .stroke(Color.themeAccent, lineWidth: 1)
         )
-    }
-    
-    var medicalInfoView : some View {
-        Section {
-            if let medicalInfo = userModel.user.medicalInfo{
-                if medicalInfo != "" {
-                    Text("Allergies/Medical Info").bold().underline()
-                    Text("\(medicalInfo)")
-                }
-            }
-        }
     }
     
     var profilePicView : some View {
@@ -127,10 +149,43 @@ struct ProfilePageView: View {
             }
         }
     }
-}
-
-struct ProfilePageView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProfilePageView()
+    
+    var myTasks : some View {
+        ScrollView{
+            VStack{
+                if let usersTasks = taskModel.getTasksForUser(userID: userModel.user.id){
+                    if usersTasks.isEmpty {
+                        Text("No assigned tasks")
+                    } else {
+                        LazyVGrid(columns: [.init(.adaptive(minimum: 100, maximum: .infinity), spacing: 8)], spacing: 3) {
+                            ForEach(usersTasks) { task in
+                                UserTask(thisTask: task)
+                            }
+                        }
+                    }
+                }
+            }
+        }.frame(maxHeight: .infinity)
+            
+//        .padding()
+//        .cornerRadius(20) /// make the background rounded
+//        .overlay( /// apply a rounded border
+//            RoundedRectangle(cornerRadius: 20)
+//                .stroke(.purple, lineWidth: 2)
+//        )
+    }
+    
+    var signoutbutton : some View {
+        Button {
+            self.signoutFunc()
+        } label: {
+            Text("Sign Out")
+        }
     }
 }
+
+//struct ProfilePageView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ProfilePageView()
+//    }
+//}

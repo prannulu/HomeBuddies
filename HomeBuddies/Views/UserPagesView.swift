@@ -21,7 +21,7 @@ struct UserPagesView: View {
                 if let currentHouse = userModel.user.currentHouse{
                     
                     if currentHouse == "" {
-                        HouseSearchView()
+                        HouseSearchView2()
                         
                     } else {
                         //                        let _ = self.taskModel.getTask(houseID: currentHouse)
@@ -45,15 +45,9 @@ struct UserPagesView: View {
                 .tabItem {
                     Image(systemName: "hands.sparkles")
                 }
-                VStack{
-                    Text("Shopping list!")
-                }
-                .tabItem {
-                    Image(systemName: "cart")
-                }
                 
                 VStack{
-                    Text("This view will contain *in-app messaging*")
+                    Text("Coming Soon: In-app messaging!")
                 }
                 .tabItem {
                     Image(systemName: "message")
@@ -62,24 +56,15 @@ struct UserPagesView: View {
             }
             
             
-            
             VStack{
-                ProfilePageView()
+                ProfilePageView(signoutFunc: signoutFunc)
             }
             .tabItem {
                 Image(systemName: "person")
             }
             
         }
-        .toolbar {
-            ToolbarItem(placement: ToolbarItemPlacement.navigationBarTrailing) {
-                Button {
-                    self.signoutFunc()
-                } label: {
-                    Text("Sign Out")
-                }
-            }
-        }
+        .edgesIgnoringSafeArea(.all)
     }
     
 }

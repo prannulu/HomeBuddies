@@ -19,19 +19,25 @@ class TaskViewModel: ObservableObject {
         }
         
         let db = Firestore.firestore()
-        db.collection("Tasks").whereField("houseID", isEqualTo: houseID.lowercased()).getDocuments() { (querySnapshot, err) in
+        db.collection("Tasks")
+            .whereField("houseID", isEqualTo: houseID.lowercased())
+            //.whereField("status", isNotEqualTo: "completed")
+            .getDocuments() { (querySnapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
             } else {
                 var tasksLoaded = [Task]()
                 for document in querySnapshot!.documents {
-                    tasksLoaded.append(Task(id: document.documentID,
-                                            description: document.data()["description"] as! String,
-                                            houseID: houseID,
-                                            createdBy: document.data()["createdBy"] as! String,
-                                            notes: document.data()["notes"] as? String,
-                                            assignedTo: document.data()["assignedTo"] as! String))
-                
+                    if document.data()["status"] as! String != "completed"{
+                        tasksLoaded.append(Task(id: document.documentID,
+                                                description: document.data()["description"] as! String,
+                                                houseID: houseID,
+                                                createdBy: document.data()["createdBy"] as! String,
+                                                notes: document.data()["notes"] as? String,
+                                                assignedTo: document.data()["assignedTo"] as! String,
+                                                status: document.data()["status"] as? String))
+                        
+                    }
                 }
                 self.taskList = tasksLoaded
             }
@@ -47,7 +53,9 @@ class TaskViewModel: ObservableObject {
         
         let db = Firestore.firestore()
         
-        db.collection("Tasks").whereField("houseID", isEqualTo: houseID.lowercased())
+        db.collection("Tasks")
+            .whereField("houseID", isEqualTo: houseID.lowercased())
+            //.whereField("status", isNotEqualTo: "completed")
             .addSnapshotListener { querySnapshot, error in
                 guard let documents = querySnapshot?.documents else {
                     print("Error fetching documents: \(error!)")
@@ -55,14 +63,17 @@ class TaskViewModel: ObservableObject {
                 }
                 var tasksLoaded = [Task]()
                 for document in documents {
-                    tasksLoaded.append(Task(id: document.documentID,
-                                            description: document.data()["description"] as! String,
-                                            houseID: houseID,
-                                            createdBy: document.data()["createdBy"] as? String ?? "",
-                                            notes: document.data()["notes"] as? String ?? "",
-                                            assignedTo: document.data()["assignedTo"] as? String ?? ""
-                                           ))
-                }
+                    if document.data()["status"] as! String != "completed"{
+                        tasksLoaded.append(Task(id: document.documentID,
+                                                description: document.data()["description"] as! String,
+                                                houseID: houseID,
+                                                createdBy: document.data()["createdBy"] as? String ?? "",
+                                                notes: document.data()["notes"] as? String ?? "",
+                                                assignedTo: document.data()["assignedTo"] as? String ?? "",
+                                                status: document.data()["status"] as? String
+                                               ))
+                    }
+                    }
                 self.taskList = tasksLoaded
             }
     }
@@ -79,7 +90,8 @@ class TaskViewModel: ObservableObject {
             "description": description,
             "createdBy": creatorID,
             "notes": notes,
-            "assignedTo": ""
+            "assignedTo": "",
+            "status": "Not yet started"
         ]) { err in
             if let err = err {
                 print("Error adding task to DB: \(err)")
@@ -106,9 +118,20 @@ class TaskViewModel: ObservableObject {
         let db = Firestore.firestore()
         db.collection("Tasks").document(taskID).setData(["notes": notes], merge: true) { err in
             if let err = err {
-                print("Error adding user to house: \(err)")
+                print("Error adding note to task: \(err)")
             } else {
                 print("Notes added to task")
+            }
+        }
+    }
+    func updateStatus(taskID: String, status: String){
+        print("running updateStatus")
+        let db = Firestore.firestore()
+        db.collection("Tasks").document(taskID).setData(["status": status], merge: true) { err in
+            if let err = err {
+                print("Error adding status to task: \(err)")
+            } else {
+                print("Status added to task")
             }
         }
     }
@@ -123,5 +146,31 @@ class TaskViewModel: ObservableObject {
                 print("Task Assigned to user")
             }
         }
+    }
+    
+    func getTasksForUser(userID: String) -> [Task] {
+        var tasksForUser = [Task]()
+        for task in taskList {
+            if task.assignedTo == userID {
+                tasksForUser.append(task)
+            }
+        }
+        return tasksForUser
+    }
+    
+    func unassignTasks(userID: String) {
+        let db = Firestore.firestore()
+        for task in taskList {
+            if task.assignedTo == userID {
+                db.collection("Tasks").document(task.id).setData(["assignedTo": ""], merge: true) { err in
+                    if let err = err {
+                        print("Error adding user to house: \(err)")
+                    } else {
+                        print("Task unassigned from user")
+                    }
+                }
+            }
+        }
+        self.taskList = [Task]()
     }
 }

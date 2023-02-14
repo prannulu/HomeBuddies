@@ -17,13 +17,18 @@ struct ChoresView: View {
     var body: some View {
         NavigationView {
             ZStack{
-                Text("Name: \(userModel.user.firstName)")
-                
-                List(self.taskModel.taskList) { task in
-                    VStack{
-                        ExpandTaskView(task: task)
-//                        
-                       
+                Color.themeBackground
+                    .edgesIgnoringSafeArea(.all)
+                if self.taskModel.taskList.count == 0 {
+                    VStack {
+                        Text("No tasks available!").font(.title2).padding()
+                        Text(Image(systemName: "info.circle")) + Text(" Click on the \"+\" to add a new task")
+                    }
+                } else {
+                    List(self.taskModel.taskList) { task in
+                        VStack{
+                            ExpandTaskView(task: task)
+                        }
                     }
                 }
                 VStack {
@@ -42,7 +47,7 @@ struct ChoresView: View {
                                 .foregroundColor(Color.white)
                                 .padding(.bottom, 7)
                         }
-                        .background(Color.blue)
+                        .background(Color.themeAccent)
                         .cornerRadius(38.5)
                         .padding()
                         .shadow(color: Color.black.opacity(0.3),
@@ -52,11 +57,15 @@ struct ChoresView: View {
                     }
                 }
             }
+            .navigationTitle("To-do List for \(houseModel.myHouse.id)")
+            .toolbarBackground(
+                            Color.themeTertiary,
+                            for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
         }
         AddTaskView(show: $showAddTask)
-            .navigationTitle("Chores List for \(houseModel.myHouse.id)")
     }
-    }
+}
 
 
 

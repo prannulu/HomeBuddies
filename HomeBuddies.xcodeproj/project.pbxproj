@@ -7,11 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F5AEF7029959566005FF28F /* UserTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5AEF6F29959566005FF28F /* UserTask.swift */; };
+		5F5AEF74299ACF30005FF28F /* RoommateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5AEF73299ACF30005FF28F /* RoommateDetailView.swift */; };
+		5F5AEF77299ADBFA005FF28F /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5F5AEF76299ADBFA005FF28F /* ConfettiSwiftUI */; };
 		5F616C9C298C7FAD00E4B325 /* ChoresView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616C9B298C7FAD00E4B325 /* ChoresView.swift */; };
 		5F616CA2298C87CF00E4B325 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CA1298C87CF00E4B325 /* Task.swift */; };
 		5F616CA4298C87E500E4B325 /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CA3298C87E500E4B325 /* TaskViewModel.swift */; };
 		5F616CA6298DA86800E4B325 /* AddTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CA5298DA86800E4B325 /* AddTaskView.swift */; };
 		5F616CA8298DC18F00E4B325 /* ExpandTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CA7298DC18F00E4B325 /* ExpandTaskView.swift */; };
+		5F616CAB2993268000E4B325 /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CAA2993268000E4B325 /* ColorExtension.swift */; };
+		5F616CAD29943C7B00E4B325 /* HouseSearchView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CAC29943C7B00E4B325 /* HouseSearchView2.swift */; };
+		5F616CAF2994415100E4B325 /* MyActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F616CAE2994415100E4B325 /* MyActionButtonStyle.swift */; };
 		5F88A2ED297F268800E3107D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5F88A2EC297F268800E3107D /* GoogleService-Info.plist */; };
 		5F88A2F0297F2AD900E3107D /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 5F88A2EF297F2AD900E3107D /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		5F88A2F2297F2AD900E3107D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5F88A2F1297F2AD900E3107D /* FirebaseAuth */; };
@@ -52,11 +58,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5F5AEF6F29959566005FF28F /* UserTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTask.swift; sourceTree = "<group>"; };
+		5F5AEF73299ACF30005FF28F /* RoommateDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoommateDetailView.swift; sourceTree = "<group>"; };
 		5F616C9B298C7FAD00E4B325 /* ChoresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresView.swift; sourceTree = "<group>"; };
 		5F616CA1298C87CF00E4B325 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		5F616CA3298C87E500E4B325 /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
 		5F616CA5298DA86800E4B325 /* AddTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTaskView.swift; sourceTree = "<group>"; };
 		5F616CA7298DC18F00E4B325 /* ExpandTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandTaskView.swift; sourceTree = "<group>"; };
+		5F616CAA2993268000E4B325 /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
+		5F616CAC29943C7B00E4B325 /* HouseSearchView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseSearchView2.swift; sourceTree = "<group>"; };
+		5F616CAE2994415100E4B325 /* MyActionButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyActionButtonStyle.swift; sourceTree = "<group>"; };
 		5F88A2EC297F268800E3107D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5F88A3102980616E00E3107D /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		5F88A3512981E2CB00E3107D /* House.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = House.swift; sourceTree = "<group>"; };
@@ -83,6 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F5AEF77299ADBFA005FF28F /* ConfettiSwiftUI in Frameworks */,
 				5F88A2F0297F2AD900E3107D /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				5F88A2F2297F2AD900E3107D /* FirebaseAuth in Frameworks */,
 				5F88A2FA297F2AD900E3107D /* FirebaseFirestore in Frameworks */,
@@ -115,6 +127,15 @@
 				5F616CA7298DC18F00E4B325 /* ExpandTaskView.swift */,
 			);
 			path = "Chores Pages";
+			sourceTree = "<group>";
+		};
+		5F616CA92993265E00E4B325 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				5F616CAA2993268000E4B325 /* ColorExtension.swift */,
+				5F616CAE2994415100E4B325 /* MyActionButtonStyle.swift */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		5F88A30F2980614600E3107D /* Models */ = {
@@ -156,6 +177,7 @@
 				5F88A36E2988754800E3107D /* ProfilePageView.swift */,
 				5F88A3722989D77400E3107D /* EditProfileView.swift */,
 				5F88A374298B3C1500E3107D /* ChangeProfilePicView.swift */,
+				5F5AEF6F29959566005FF28F /* UserTask.swift */,
 			);
 			path = "User Pages";
 			sourceTree = "<group>";
@@ -165,6 +187,8 @@
 			children = (
 				5F88A35A2982FEB600E3107D /* HouseSearchView.swift */,
 				5F88A36229834A7800E3107D /* HousePageView.swift */,
+				5F616CAC29943C7B00E4B325 /* HouseSearchView2.swift */,
+				5F5AEF73299ACF30005FF28F /* RoommateDetailView.swift */,
 			);
 			path = "House Pages";
 			sourceTree = "<group>";
@@ -190,6 +214,7 @@
 		5FF6CAD4297F092000A11425 /* HomeBuddies */ = {
 			isa = PBXGroup;
 			children = (
+				5F616CA92993265E00E4B325 /* Resources */,
 				5FF6CAD5297F092000A11425 /* HomeBuddiesApp.swift */,
 				5F88A2EC297F268800E3107D /* GoogleService-Info.plist */,
 				5F88A3532981E2DE00E3107D /* Views */,
@@ -230,6 +255,7 @@
 				5F88A2F1297F2AD900E3107D /* FirebaseAuth */,
 				5F88A2F9297F2AD900E3107D /* FirebaseFirestore */,
 				5F88A2FD297F2AD900E3107D /* FirebaseFirestoreSwift */,
+				5F5AEF76299ADBFA005FF28F /* ConfettiSwiftUI */,
 			);
 			productName = HomeBuddies;
 			productReference = 5FF6CAD2297F092000A11425 /* HomeBuddies.app */;
@@ -305,6 +331,7 @@
 			mainGroup = 5FF6CAC9297F092000A11425;
 			packageReferences = (
 				5F88A2EE297F2AD900E3107D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				5F5AEF75299ADBFA005FF28F /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 			);
 			productRefGroup = 5FF6CAD3297F092000A11425 /* Products */;
 			projectDirPath = "";
@@ -349,7 +376,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F5AEF74299ACF30005FF28F /* RoommateDetailView.swift in Sources */,
 				5F88A3732989D77400E3107D /* EditProfileView.swift in Sources */,
+				5F5AEF7029959566005FF28F /* UserTask.swift in Sources */,
 				5F88A3692983657400E3107D /* User.swift in Sources */,
 				5F88A367298361D500E3107D /* UserPagesView.swift in Sources */,
 				5F616CA8298DC18F00E4B325 /* ExpandTaskView.swift in Sources */,
@@ -361,12 +390,15 @@
 				5F88A36329834A7900E3107D /* HousePageView.swift in Sources */,
 				5F616C9C298C7FAD00E4B325 /* ChoresView.swift in Sources */,
 				5F88A375298B3C1500E3107D /* ChangeProfilePicView.swift in Sources */,
+				5F616CAD29943C7B00E4B325 /* HouseSearchView2.swift in Sources */,
 				5F88A3112980616E00E3107D /* Theme.swift in Sources */,
+				5F616CAF2994415100E4B325 /* MyActionButtonStyle.swift in Sources */,
 				5F88A35B2982FEB600E3107D /* HouseSearchView.swift in Sources */,
 				5F616CA6298DA86800E4B325 /* AddTaskView.swift in Sources */,
 				5F616CA4298C87E500E4B325 /* TaskViewModel.swift in Sources */,
 				5F88A36F2988754800E3107D /* ProfilePageView.swift in Sources */,
 				5FF6CAD6297F092000A11425 /* HomeBuddiesApp.swift in Sources */,
+				5F616CAB2993268000E4B325 /* ColorExtension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -690,6 +722,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5F5AEF75299ADBFA005FF28F /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		5F88A2EE297F2AD900E3107D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -701,6 +741,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5F5AEF76299ADBFA005FF28F /* ConfettiSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5F5AEF75299ADBFA005FF28F /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
+			productName = ConfettiSwiftUI;
+		};
 		5F88A2EF297F2AD900E3107D /* FirebaseAnalyticsWithoutAdIdSupport */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5F88A2EE297F2AD900E3107D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
