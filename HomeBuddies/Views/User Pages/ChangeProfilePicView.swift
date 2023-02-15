@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChangeProfilePicView: View {
     @EnvironmentObject var userModel: UserViewModel
-    private let pics = ["marceline", "baby", "pb", "guitar", "angry", "neutral"]
+    private let pics = ["bunny", "mushroom", "gunther", "lion", "axolotl", "rat"]
     @Environment(\.presentationMode) var mode: Binding<PresentationMode>
     
     

@@ -35,21 +35,25 @@ struct LaunchPageView: View {
     var content: some View {
         NavigationView {
             ZStack {
-                Color.themeFour
+                Color.themeLaunch
                     .ignoresSafeArea()
                 
+                Image("Appicon-alt")
+                    .resizable()
+                    .scaledToFit()
+                    .offset(y:-50)
+                
                 VStack{
-                    Image("Image 1")
-                        .resizable()
-                        .scaledToFit()
-                        .clipShape(Circle())
-                        .frame(width: 200, height: 200)
-                    Text("~ HomeBuddies ~").font(.title)
-                        .foregroundColor(Color.themeAccent)
-                        .bold()
-                    Divider()
-                    Spacer()
-                        .frame(height: 30)
+//                    Image("Image 1")
+//                        .resizable()
+//                        .scaledToFit()
+//                        .clipShape(Circle())
+//                        .frame(width: 200, height: 200)
+//                    Text("~ HomeBuddies ~").font(.title)
+//                        .foregroundColor(Color.themeAccent)
+//                        .bold()
+//                    Divider()
+                   
                     Capsule()
                         .fill(Color.themeTertiary)
                         .padding(.horizontal, 60)
@@ -69,7 +73,7 @@ struct LaunchPageView: View {
                                 .foregroundColor(.white)
                                 .bold()
                         })
-                }
+                }.offset(y:170)
             }
         }
     }
