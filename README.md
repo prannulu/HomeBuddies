@@ -59,4 +59,7 @@ HomeBuddies will not be available on the App Store. If you want to use this app,
 5. To run it on your iPhone, you will have to enable Developer Mode on your phone. Steps to do this can be found here: https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device
 <br> Then select your iphone as the destination to run the app (instead of the simulator).
 
+## Presentation
+You can find more information here: https://docs.google.com/presentation/d/1KHWvuRa7Yvwy01abc_K1iBc5Tz9NXdkQ6UpOB9I-uYU
+
 Thank you! Hope you enjoy!
